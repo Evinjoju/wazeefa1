@@ -17,6 +17,7 @@ import projectRoutes from './routes/projects';
 import userRoutes from './routes/users';
 import permissionRoutes from './routes/permissions';
 import { apiRateLimiter } from './middleware/auth';
+import { errorHandler } from './middleware/errorHandler';
 
 // Apply rate limiter to all API routes
 app.use('/api/', apiRateLimiter);
@@ -29,6 +30,9 @@ app.use('/api/permissions', permissionRoutes);
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
+// Generic Error Handler (MUST be last)
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

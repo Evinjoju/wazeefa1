@@ -2,6 +2,8 @@ import { Router, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { prisma } from '../index';
 import { authenticate, requirePermission, AuthRequest } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { createUserSchema, updateUserStatusSchema } from '../schemas';
 
 const router = Router();
 
@@ -12,18 +14,14 @@ router.use(authenticate);
 router.get('/', requirePermission('users.read'), async (req: AuthRequest, res: Response) => {
   const { tenantId, role } = req.user!;
   
-  try {
-    const users = role === 'SUPER_ADMIN' 
-      ? await prisma.user.findMany() 
-      : await prisma.user.findMany({ where: { tenantId: tenantId! } });
-      
-    res.json(users.map(u => ({ id: u.id, email: u.email, role: u.role, tenantId: u.tenantId, isActive: u.isActive })));
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
+  const users = role === 'SUPER_ADMIN' 
+    ? await prisma.user.findMany() 
+    : await prisma.user.findMany({ where: { tenantId: tenantId! } });
+    
+  res.json(users.map(u => ({ id: u.id, email: u.email, role: u.role, tenantId: u.tenantId, isActive: u.isActive })));
 });
 
-router.post('/', requirePermission('users.create'), async (req: AuthRequest, res: Response) => {
+router.post('/', requirePermission('users.create'), validate(createUserSchema), async (req: AuthRequest, res: Response) => {
   const { tenantId, role } = req.user!;
   const { email, password, assignedRole, permissions, targetTenantId } = req.body;
 
@@ -41,8 +39,7 @@ router.post('/', requirePermission('users.create'), async (req: AuthRequest, res
     newTenantId = defaultTenant.id;
   }
 
-  try {
-    const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(password, 10);
     
     const user = await prisma.user.create({
       data: {
@@ -53,31 +50,27 @@ router.post('/', requirePermission('users.create'), async (req: AuthRequest, res
       }
     });
 
-    if (permissions && permissions.length > 0) {
-       for (const permName of permissions) {
-          let perm = await prisma.permission.findUnique({ where: { name: permName } });
-          if (!perm) {
-            perm = await prisma.permission.create({ data: { name: permName } });
-          }
-          await prisma.userPermission.create({
-              data: { userId: user.id, permissionId: perm.id }
-          });
-       }
-    }
-
-    res.status(201).json({ id: user.id, email: user.email, role: user.role, isActive: user.isActive });
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+  if (permissions && permissions.length > 0) {
+     for (const permName of permissions) {
+        let perm = await prisma.permission.findUnique({ where: { name: permName } });
+        if (!perm) {
+          perm = await prisma.permission.create({ data: { name: permName } });
+        }
+        await prisma.userPermission.create({
+            data: { userId: user.id, permissionId: perm.id }
+        });
+     }
   }
+
+  res.status(201).json({ id: user.id, email: user.email, role: user.role, isActive: user.isActive });
 });
 
-router.put('/:id/status', requirePermission('users.update'), async (req: AuthRequest, res: Response) => {
+router.put('/:id/status', requirePermission('users.update'), validate(updateUserStatusSchema), async (req: AuthRequest, res: Response) => {
   const { tenantId, role } = req.user!;
   const id = req.params.id as string;
   const { isActive } = req.body;
 
-  try {
-    const userToUpdate = await prisma.user.findUnique({ where: { id } });
+  const userToUpdate = await prisma.user.findUnique({ where: { id } });
     if (!userToUpdate) return res.status(404).json({ error: 'User not found' });
     
     // Super admins can disable anyone except other super admins. Admins can disable Agents in their tenant.
@@ -94,15 +87,12 @@ router.put('/:id/status', requirePermission('users.update'), async (req: AuthReq
         return res.status(403).json({ error: 'Agents cannot manage users' });
     }
 
-    const updated = await prisma.user.update({
-      where: { id },
-      data: { isActive }
-    });
-    
-    res.json({ id: updated.id, isActive: updated.isActive });
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
+  const updated = await prisma.user.update({
+    where: { id },
+    data: { isActive }
+  });
+  
+  res.json({ id: updated.id, isActive: updated.isActive });
 });
 
 export default router;

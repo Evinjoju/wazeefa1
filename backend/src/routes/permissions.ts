@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { getAdminPermissions, configPath } from '../utils/permissionsHelper';
+import { validate } from '../middleware/validate';
+import { updateAdminPermissionsSchema } from '../schemas';
 
 const router = Router();
 
@@ -15,11 +17,10 @@ router.get('/admin', async (req: AuthRequest, res: Response) => {
 });
 
 // Update admin permissions
-router.post('/admin', async (req: AuthRequest, res: Response) => {
+router.post('/admin', validate(updateAdminPermissionsSchema), async (req: AuthRequest, res: Response) => {
   if (req.user!.role !== 'SUPER_ADMIN') return res.status(403).json({ error: 'Forbidden' });
   
   const { permissions } = req.body;
-  if (!Array.isArray(permissions)) return res.status(400).json({ error: 'Invalid payload' });
 
   fs.writeFileSync(configPath, JSON.stringify(permissions));
   res.json({ message: 'Permissions updated successfully' });
