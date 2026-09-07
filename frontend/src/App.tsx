@@ -25,7 +25,7 @@ const Login = () => {
 
   return (
     <div className="card" style={{ maxWidth: '400px', margin: '100px auto' }}>
-      <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Wazeefa Login</h2>
+      <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>TenetFlow Login</h2>
       {error && <div style={{ color: 'var(--danger)', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <input 
@@ -57,7 +57,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       <aside style={{ width: '250px', background: 'rgba(30, 41, 59, 0.7)', padding: '1.5rem', borderRight: '1px solid var(--border)' }}>
-        <h2>Wazeefa</h2>
+        <h2>TenetFlow</h2>
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           <span>Role: {user?.role}</span>
           {user?.email && <span style={{ wordBreak: 'break-all' }}>{user.email}</span>}
