@@ -42,7 +42,7 @@ router.post('/login', loginRateLimiter, validate(loginSchema), async (req, res) 
     res.json({ token, role: user.role, tenantId: user.tenantId, permissions });
 });
 
-router.get('/me', authenticate, async (req: AuthRequest, res: Response) => {
+router.get('/me', authenticate as any, async (req: AuthRequest, res: Response) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user!.id },
     include: { permissions: { include: { permission: true } } },

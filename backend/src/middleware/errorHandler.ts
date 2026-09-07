@@ -7,7 +7,7 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
   if (err instanceof ZodError) {
     return res.status(400).json({
       error: 'Validation failed',
-      details: err.errors.map(e => ({
+      details: err.issues.map((e: any) => ({
         path: e.path.join('.'),
         message: e.message
       }))
@@ -15,7 +15,7 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
   }
 
   // Handle Prisma Known Request Errors
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+  if (err.name === 'PrismaClientKnownRequestError') {
     // Unique constraint failed
     if (err.code === 'P2002') {
       return res.status(409).json({ error: 'A record with that value already exists' });
