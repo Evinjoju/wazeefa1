@@ -12,7 +12,20 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Placeholder for routes
+import authRoutes from './routes/auth';
+import projectRoutes from './routes/projects';
+import userRoutes from './routes/users';
+import permissionRoutes from './routes/permissions';
+import { apiRateLimiter } from './middleware/auth';
+
+// Apply rate limiter to all API routes
+app.use('/api/', apiRateLimiter);
+
+app.use('/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/permissions', permissionRoutes);
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
