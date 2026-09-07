@@ -1,0 +1,66 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tenant {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  users     User[]
+  projects  Project[]
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  AGENT
+}
+
+model User {
+  id           String           @id @default(uuid())
+  email        String           @unique
+  passwordHash String
+  role         Role
+  tenantId     String?          
+  tenant       Tenant?          @relation(fields: [tenantId], references: [id])
+  permissions  UserPermission[]
+  createdAt    DateTime         @default(now())
+}
+
+model Permission {
+  id    String           @id @default(uuid())
+  name  String           @unique
+  users UserPermission[]
+}
+
+model UserPermission {
+  userId       String
+  permissionId String
+  user         User       @relation(fields: [userId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([userId, permissionId])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  INACTIVE
+  DRAFT
+}
+
+model Project {
+  id        String        @id @default(uuid())
+  name      String
+  address   String
+  useCase   String
+  status    ProjectStatus @default(ACTIVE)
+  tenantId  String
+  tenant    Tenant        @relation(fields: [tenantId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
