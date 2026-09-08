@@ -118,3 +118,41 @@ th {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column !important;
+  }
+  
+  .dashboard-sidebar {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 1rem !important;
+  }
+  
+  .dashboard-main {
+    padding: 1rem !important;
+  }
+  
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+  
+  .modal-card {
+    width: 90% !important;
+    max-width: 400px !important;
+  }
+  
+  .modal-card.wide {
+    max-width: 450px !important;
+  }
+  
+  .login-card {
+    margin: 40px auto !important;
+    width: 90% !important;
+  }
+}

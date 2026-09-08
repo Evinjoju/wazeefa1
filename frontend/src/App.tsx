@@ -24,7 +24,7 @@ const Login = () => {
   };
 
   return (
-    <div className="card" style={{ maxWidth: '400px', margin: '100px auto' }}>
+    <div className="card login-card" style={{ maxWidth: '400px', margin: '100px auto' }}>
       <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>TenetFlow Login</h2>
       {error && <div style={{ color: 'var(--danger)', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -55,8 +55,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside style={{ width: '250px', background: 'rgba(30, 41, 59, 0.7)', padding: '1.5rem', borderRight: '1px solid var(--border)' }}>
+    <div className="dashboard-layout" style={{ display: 'flex', minHeight: '100vh' }}>
+      <aside className="dashboard-sidebar" style={{ width: '250px', background: 'rgba(30, 41, 59, 0.7)', padding: '1.5rem', borderRight: '1px solid var(--border)' }}>
         <h2>TenetFlow</h2>
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           <span>Role: {user?.role}</span>
@@ -73,7 +73,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           </button>
         </div>
       </aside>
-      <main style={{ flex: 1, padding: '2rem', position: 'relative' }}>
+      <main className="dashboard-main" style={{ flex: 1, padding: '2rem', position: 'relative' }}>
         {children}
       </main>
     </div>
@@ -150,7 +150,7 @@ const Projects = () => {
 
   return (
     <DashboardLayout>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1>Projects</h1>
         {hasPermission('projects.create') && (
           <button className="btn btn-primary" onClick={openCreateModal}>Create Project</button>
@@ -199,7 +199,7 @@ const Projects = () => {
 
       {isModalOpen && (
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div className="card" style={{ width: '400px', position: 'relative' }}>
+          <div className="card modal-card" style={{ width: '400px', position: 'relative' }}>
             <h2 style={{ marginBottom: '1.5rem' }}>{editingProject ? 'Edit Project' : 'Create New Project'}</h2>
             <form onSubmit={handleCreateOrUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <input className="input" placeholder="Project Name" value={name} onChange={e => setName(e.target.value)} required />
@@ -281,7 +281,7 @@ const Users = () => {
 
   return (
     <DashboardLayout>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1>Users</h1>
         {hasPermission('users.create') && (
           <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>Create User</button>
@@ -340,7 +340,7 @@ const Users = () => {
 
       {isModalOpen && (
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div className="card" style={{ width: '450px', position: 'relative' }}>
+          <div className="card modal-card wide" style={{ width: '450px', position: 'relative' }}>
             <h2 style={{ marginBottom: '1.5rem' }}>Create New User</h2>
             <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <input className="input" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
