@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api'
+  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : 'http://localhost:3000/api'
 });
 
 api.interceptors.request.use((config) => {
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (token) {
-      axios.get('http://localhost:3000/auth/me', {
+      axios.get(import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/auth/me` : 'http://localhost:3000/auth/me', {
         headers: { Authorization: `Bearer ${token}` }
       }).then(res => {
          const freshUser = res.data;
